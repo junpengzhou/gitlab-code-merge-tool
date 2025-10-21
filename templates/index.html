@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>😽创建合并</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>😽创建Gitlab合并请求</h1>
+
+    <div id="storage-notice" class="storage-notice" style="display: none;">
+        <span class="storage-text">📋 已加载本地保存的历史输入数据，如需重置请点击右侧的"清除本地数据"按钮</span>
+        <button class="btn-clear" onclick="clearLocalStorage()">清除本地数据</button>
+    </div>
+
+    <form id="merge-form" class="merge-form" action="/create-merge-requests" method="post">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="source_branch">来源分支:</label>
+                <input type="text"
+                       id="source_branch"
+                       name="source_branch"
+                       placeholder="例如: feature/DOT-2330【功能优化】社区跟单服务独立剥离"
+                       required
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="target_branch">目标分支:</label>
+                <input type="text"
+                       id="target_branch"
+                       name="target_branch"
+                       placeholder="例如: test"
+                       required
+                />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="start_with">项目名称前缀 (可选):</label>
+            <input type="text"
+                   id="start_with"
+                   name="start_with"
+                   placeholder="例如: ifintech"
+            />
+            <small>只处理以此前缀开头的项目</small>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="reviewer_usernames">评审人用户名 (可选, 逗号分隔):</label>
+                <input type="text"
+                       id="reviewer_usernames"
+                       name="reviewer_usernames"
+                       placeholder="例如: superman,FrankZhou"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="assignee_usernames">指派人用户名 (可选, 逗号分隔):</label>
+                <input type="text"
+                       id="assignee_usernames"
+                       name="assignee_usernames"
+                       placeholder="例如: superman,FrankZhou"
+                />
+            </div>
+        </div>
+
+        <!-- 高级选项 -->
+        <div class="advanced-options">
+            <button type="button" class="btn-custom" id="toggle-advanced">🔽 高级选项</button>
+            <div id="advanced-content" class="advanced-content" style="display: none;">
+                <div class="form-group">
+                    <label>选择特定项目:</label>
+                    <div class="project-list-container">
+                        <div class="project-list-header">
+                            <button type="button" id="refresh-projects" class="btn-refresh">🔄 刷新列表</button>
+                            <div class="select-all-container">
+                                <input type="checkbox" id="select-all-projects">
+                                <label for="select-all-projects">全选/取消全选</label>
+                            </div>
+                        </div>
+                        <div id="project-list" class="project-list">
+                            <div class="loading-projects">加载中...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 用户选择的指定的项目,默认为隐藏 -->
+        <input type="hidden" id="specific_projects" name="specific_projects" value="">
+
+        <div class="form-actions">
+            <button type="submit" id="merge-submit-btn" class="btn-primary">创建合并请求</button>
+            <button type="button" class="btn-secondary" onclick="goToUrl()">修改基础配置</button>
+        </div>
+    </form>
+</div>
+
+<!-- 添加Loading动画层 -->
+<div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">正在创建合并请求，请稍等片刻，饮茶先啦...</p>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script>
+    const configUrl = "{{ url_for('page_configuration') }}";
+
+    function goToUrl() {
+        window.location.href = configUrl;
+    }
+</script>
+</body>
+</html>

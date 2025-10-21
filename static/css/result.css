@@ -1,0 +1,65 @@
+.copy-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.copy-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s;
+}
+
+.copy-button:hover {
+    background-color: #e0e0e0;
+}
+
+.output-text {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-top: 10px;
+    position: relative;
+}
+
+.summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.summary h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary p {
+    margin: 8px 0;
+    align-items: center;
+}
+
+.summary strong {
+    min-width: 70px;
+    white-space: nowrap;
+}
+
+.summary p span {
+    padding-left: 8px;
+}
+

@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.error-container {
+    max-width: 70%;
+    min-width: 25%;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.error-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.error-code {
+    font-size: 48px;
+    font-weight: bold;
+    color: #2d3436;
+    margin-bottom: 10px;
+}
+
+.error-title {
+    font-size: 24px;
+    color: #636e72;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.error-details {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 25px 0;
+    text-align: left;
+}
+
+.error-message {
+    font-family: 'Courier New', monospace;
+    color: #e74c3c;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-top: 10px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 25px 0;
+}
+
+.back-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    min-width: 120px;
+}
+
+.back-button:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.back-button:active, .back-button:active {
+    transform: translateY(0);
+}
+
+.error-id-section {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.error-id {
+    font-size: 24px;
+    font-weight: bold;
+    color: #e74c3c;
+    letter-spacing: 2px;
+    margin: 10px 0;
+}
+
+.timestamp {
+    color: #6c757d;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.support-info {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 20px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.copy-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.copy-btn:hover {
+    background: #2980b9;
+}
+
+@media (max-width: 768px) {
+    .error-container {
+        margin: 20px;
+        padding: 20px;
+    }
+
+    .error-code {
+        font-size: 36px;
+    }
+
+    .error-title {
+        font-size: 20px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+}

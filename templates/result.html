@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦹‍♂️结果报告</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/result.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>🦹‍♂️合并请求创建结果</h1>
+
+    <div class="summary">
+        <h3>一、摘要</h3>
+        <p><strong>👨‍💻操作人员:</strong><span>{{ username }}</span></p>
+        <p><strong>📤来源分支:</strong><span>{{ source_branch }}</span></p>
+        <p><strong>📥目标分支:</strong><span>{{ target_branch }}</span></p>
+    </div>
+
+    <div class="output-section">
+        <h3>二、输出</h3>
+        <div class="copy-container">
+            <button id="copy-output-btn" class="copy-button">📋点击复制</button>
+            <pre class="output-text">{{ output_text }}</pre>
+        </div>
+    </div>
+
+    {% if merge_results %}
+    <div class="results-section">
+        <h3>三、明细</h3>
+        <table class="results-table">
+            <thead>
+            <tr>
+                <th>项目</th>
+                <th>状态</th>
+                <th>链接</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for project, result in merge_results.items() %}
+            <tr>
+                <td>
+                    {{ project }}
+                </td>
+                <td class="status-{{ result.status }}">
+                    {{ result.status_name }}
+                </td>
+                <td class="result-url">
+                    {% if result.status == 'success' %}
+                    <a href="{{ result.url }}" target="_blank">{{ result.url }}</a>
+                    {% else %}
+                    {{ result.url }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="{{ url_for('page_merge') }}" class="btn-primary">创建新的合并请求</a>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/result.js') }}"></script>
+</body>
+</html>
