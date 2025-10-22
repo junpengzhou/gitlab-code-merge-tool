@@ -24,4 +24,4 @@ HEALTHCHECK --interval=60s --timeout=3s --start-period=40s \
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--workers", "6", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]
