@@ -14,8 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY .. .
 
 # 创建flaskuser用户增强安全性
+RUN mkdir -p /app/logs
 RUN useradd -m flaskuser && chown -R flaskuser:flaskuser /app
-RUN mkdir -p /app/logs && chown -R flaskuser:flaskuser /app/logs
 USER flaskuser
 
 # 健康检查
