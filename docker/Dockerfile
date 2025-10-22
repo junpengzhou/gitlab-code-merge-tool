@@ -15,7 +15,7 @@ COPY .. .
 
 # 创建flaskuser用户增强安全性
 RUN mkdir -p /app/logs
-RUN useradd -m flaskuser && chown -R flaskuser:flaskuser /app
+RUN useradd -m -u 1000 flaskuser && chown -R flaskuser:flaskuser /app
 USER flaskuser
 
 # 健康检查
