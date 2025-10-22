@@ -31,7 +31,7 @@ class GitlabManager:
             all=True,
             iterator=True
         )
-        return list([project.name for project in projects])
+        return sorted([project.name for project in projects])
 
     def create_merge_requests(
             self,
