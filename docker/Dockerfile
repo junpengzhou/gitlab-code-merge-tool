@@ -11,7 +11,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY .. .
 
 # 创建flaskuser用户增强安全性
 RUN useradd -m flaskuser && chown -R flaskuser:flaskuser /app
