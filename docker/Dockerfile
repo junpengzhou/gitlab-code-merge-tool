@@ -19,7 +19,7 @@ RUN useradd -m flaskuser && chown -R flaskuser:flaskuser /app
 USER flaskuser
 
 # 健康检查
-HEALTHCHECK --interval=60s --timeout=3s --start-period=40s \
+HEALTHCHECK --interval=60s --timeout=3s --start-period=10s \
   CMD curl -fs http://localhost:5000/health || exit 1
 
 EXPOSE 5000
