@@ -375,8 +375,28 @@ input[data-has-storage="true"] {
 
 .loading-projects {
     text-align: center;
-    padding: 20px;
+    padding: 30px;
+    font-size: 12px;
     color: #666;
+}
+
+.loading-projects::after {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(102, 126, 234, 0.3);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 1s linear infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* 响应式 */
