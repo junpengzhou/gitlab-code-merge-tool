@@ -1,4 +1,4 @@
-flask==2.3.3
-python-gitlab==3.15.0
-requests==2.32.4
-gunicorn==21.2.0
+flask==3.1.2
+python-gitlab==6.5.0
+requests==2.32.5
+gunicorn==23.0.0
