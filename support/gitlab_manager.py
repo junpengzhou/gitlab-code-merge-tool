@@ -52,7 +52,9 @@ class GitlabManager:
         assignee_ids = self._get_gitlab_ids(assignee_usernames)
 
         projects = self.get_special_projects(specific_projects, start_with)
-
+        # 待确定是否有合并请求
+        to_be_confirm: dict[str, Any] = {}
+        have_src_target_branch_project = []
         for idx, project in enumerate(projects, 1):
             project_name = project.name
 
@@ -78,6 +80,8 @@ class GitlabManager:
                         )
                     continue
 
+                have_src_target_branch_project.append(project_name)
+
                 # 检查是否现有合并请求
                 existing_mr = self._get_existing_merge_request(project, source_branch, target_branch)
                 if existing_mr:
@@ -95,17 +99,8 @@ class GitlabManager:
                     assignee_ids=assignee_ids,
                 )
 
-                # 判断合并请求是否有变更, 自动关闭没有变更的请求
-                has_changes = self._close_non_has_change_merge(project, mr)
-                if has_changes:
-                    merge_results[project_name] = self._result_build(
-                        status='success', status_name='创建合并请求', url=mr.web_url
-                    )
-                else:
-                    # 增加执行关闭合并
-                    merge_results[project_name] = self._result_build(
-                        status='non-change', status_name='无变更,已静默关闭', url=mr.web_url
-                    )
+                # 放入待确认集合（新创建的要确定一下是否有真实变更）
+                to_be_confirm.update({project_name: mr})
 
             except GitlabError as e:
                 self._output_write(f"🔥 处理失败: {str(e)}")
@@ -117,10 +112,22 @@ class GitlabManager:
 
         self._output_write(f"📊{oper_username}提交的批量创建合并请求结果汇总:")
         self._output_write("=" * 50)
-        project_names = ",".join([project_name for project_name, result in merge_result_items])
-        self._output_write(f"涉及总数:{len(merge_result_items)},涉及项目:{project_names}")
+        self._output_write(f"分支涉及项目:{have_src_target_branch_project}")
         self._output_write("=" * 50)
         self._output_write(f"来源分支:{source_branch} -> 目标分支:{target_branch}, 有效合并请求:")
+
+        # 判断合并请求是否有变更, 自动关闭没有变更的请求
+        if to_be_confirm:
+            for project_name, mr in to_be_confirm.items():
+                has_changes = self._close_non_has_change_merge(mr)
+                if has_changes:
+                    merge_results[project_name] = self._result_build(
+                        status='success', status_name='创建合并请求', url=mr.web_url
+                    )
+                else:
+                    merge_results[project_name] = self._result_build(
+                        status='non-change', status_name='无变更,已静默关闭', url=mr.web_url
+                    )
 
         have_merge_result = False
         for project, result in merge_result_items:
@@ -137,7 +144,7 @@ class GitlabManager:
         return merge_results, self.output_buffer.getvalue()
 
     @staticmethod
-    def _close_non_has_change_merge(project, mr) -> bool:
+    def _close_non_has_change_merge(mr) -> bool:
         max_retries = 3
         retry_delay = 2
         for i in range(max_retries):
