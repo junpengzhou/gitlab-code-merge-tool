@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from io import StringIO
 from typing import Optional, List, Any
 
@@ -93,9 +94,18 @@ class GitlabManager:
                     reviewer_ids=reviewer_ids,
                     assignee_ids=assignee_ids,
                 )
-                merge_results[project_name] = self._result_build(
-                    status='success', status_name='创建合并请求', url=mr.web_url
-                )
+
+                # 判断合并请求是否有变更, 自动关闭没有变更的请求
+                has_changes = self._close_non_has_change_merge(project, mr)
+                if has_changes:
+                    merge_results[project_name] = self._result_build(
+                        status='success', status_name='创建合并请求', url=mr.web_url
+                    )
+                else:
+                    # 增加执行关闭合并
+                    merge_results[project_name] = self._result_build(
+                        status='non-change', status_name='无变更,已静默关闭', url=mr.web_url
+                    )
 
             except GitlabError as e:
                 self._output_write(f"🔥 处理失败: {str(e)}")
@@ -107,7 +117,10 @@ class GitlabManager:
 
         self._output_write(f"📊{oper_username}提交的批量创建合并请求结果汇总:")
         self._output_write("=" * 50)
-        self._output_write(f"来源分支:{source_branch} -> 目标分支:{target_branch}")
+        project_names = ",".join([project_name for project_name, result in merge_result_items])
+        self._output_write(f"涉及总数:{len(merge_result_items)},涉及项目:{project_names}")
+        self._output_write("=" * 50)
+        self._output_write(f"来源分支:{source_branch} -> 目标分支:{target_branch}, 有效合并请求:")
 
         have_merge_result = False
         for project, result in merge_result_items:
@@ -122,6 +135,40 @@ class GitlabManager:
         self._output_write("=" * 50)
 
         return merge_results, self.output_buffer.getvalue()
+
+    @staticmethod
+    def _close_non_has_change_merge(project, mr) -> bool:
+        max_retries = 3
+        retry_delay = 2
+        for i in range(max_retries):
+            changes_response = mr.changes()
+            changes = changes_response.get('changes')
+
+            created_at = changes_response.get('created_at')
+            updated_at = changes_response.get('updated_at')
+
+            # 没有时间标记走安全策略返回有变更
+            if not created_at or not updated_at:
+                return True
+
+            non_change = str(created_at) == str(updated_at)
+
+            if non_change:
+                # 有变更，等待重试
+                time.sleep(retry_delay)
+                continue
+            # 没有变更，尝试关闭合并请求
+            if not changes:
+                try:
+                    # 获取合并请求
+                    mr.state_event = 'close'
+                    mr.save()
+                except Exception:
+                    return True
+            return bool(changes)
+        else:
+            has_changes = True
+        return has_changes
 
     def get_special_projects(
             self,

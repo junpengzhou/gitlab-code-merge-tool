@@ -190,6 +190,11 @@ small {
     font-weight: 600;
 }
 
+.status-non-change {
+    color: #ffc341;
+    font-weight: 600;
+}
+
 .summary, .output-section, .results-section {
     margin-bottom: 30px;
 }
