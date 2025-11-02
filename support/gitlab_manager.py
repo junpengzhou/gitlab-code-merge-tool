@@ -119,11 +119,17 @@ class GitlabManager:
         # 判断合并请求是否有变更, 自动关闭没有变更的请求
         if to_be_confirm:
             for project_name, mr in to_be_confirm.items():
-                has_changes = self._close_non_has_change_merge(mr)
+                has_changes, has_conflicts = self._close_non_has_change_merge(mr)
                 if has_changes:
-                    merge_results[project_name] = self._result_build(
-                        status='success', status_name='创建合并请求', url=mr.web_url
-                    )
+                    # 存在冲突
+                    if has_conflicts:
+                        merge_results[project_name] = self._result_build(
+                            status='conflicts', status_name='创建成功,存在冲突,请本地解决!', url=mr.web_url
+                        )
+                    else:
+                        merge_results[project_name] = self._result_build(
+                            status='success', status_name='创建合并请求', url=mr.web_url
+                        )
                 else:
                     merge_results[project_name] = self._result_build(
                         status='non-change', status_name='无变更,已静默关闭', url=mr.web_url
@@ -131,9 +137,10 @@ class GitlabManager:
 
         have_merge_result = False
         for project, result in merge_result_items:
-            if result['status'] == 'success':
+            if result['status'] == 'success' or result['status'] == 'conflicts':
                 merge_url = result['url']
-                self._output_write(f" - {project}: {merge_url}")
+                ext_tips = ' [存在冲突,请本地解决] ' if result['status'] == 'conflicts' else ' '
+                self._output_write(f" -{project}: {merge_url} {ext_tips}")
                 have_merge_result = True
 
         if not have_merge_result:
@@ -144,19 +151,20 @@ class GitlabManager:
         return merge_results, self.output_buffer.getvalue()
 
     @staticmethod
-    def _close_non_has_change_merge(mr) -> bool:
+    def _close_non_has_change_merge(mr) -> tuple[bool, bool]:
         max_retries = 3
         retry_delay = 2
         for i in range(max_retries):
             changes_response = mr.changes()
             changes = changes_response.get('changes')
+            has_conflicts = changes_response.get('has_conflicts')
 
             created_at = changes_response.get('created_at')
             updated_at = changes_response.get('updated_at')
 
             # 没有时间标记走安全策略返回有变更
             if not created_at or not updated_at:
-                return True
+                return True, False
 
             non_change = str(created_at) == str(updated_at)
 
@@ -171,11 +179,12 @@ class GitlabManager:
                     mr.state_event = 'close'
                     mr.save()
                 except Exception:
-                    return True
-            return bool(changes)
+                    return True, bool(has_conflicts)
+            return bool(changes), bool(has_conflicts)
         else:
             has_changes = True
-        return has_changes
+            has_conflicts = False
+        return has_changes, has_conflicts
 
     def get_special_projects(
             self,

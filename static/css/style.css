@@ -195,6 +195,15 @@ small {
     font-weight: 600;
 }
 
+.status-conflicts {
+    color: #f6877c;
+    font-weight: 600;
+}
+
+.status-conflicts-url {
+    color: #e74c3c;
+}
+
 .summary, .output-section, .results-section {
     margin-bottom: 30px;
 }

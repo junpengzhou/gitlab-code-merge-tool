@@ -28,37 +28,39 @@
     </div>
 
     {% if merge_results %}
-    <div class="results-section">
-        <h3>三、明细</h3>
-        <table class="results-table">
-            <thead>
-            <tr>
-                <th>项目</th>
-                <th>状态</th>
-                <th>链接</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for project, result in merge_results.items() %}
-            <tr>
-                <td>
-                    {{ project }}
-                </td>
-                <td class="status-{{ result.status }}">
-                    {{ result.status_name }}
-                </td>
-                <td class="result-url">
-                    {% if result.status == 'success' %}
-                    <a href="{{ result.url }}" target="_blank">{{ result.url }}</a>
-                    {% else %}
-                    {{ result.url }}
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="results-section">
+            <h3>三、明细</h3>
+            <table class="results-table">
+                <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>状态</th>
+                    <th>链接</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for project, result in merge_results.items() %}
+                    <tr>
+                        <td>
+                            {{ project }}
+                        </td>
+                        <td class="status-{{ result.status }}">
+                            {{ result.status_name }}
+                        </td>
+                        <td class="result-url">
+                            {% if result.status == 'success' %}
+                                <a href="{{ result.url }}" target="_blank">{{ result.url }}</a>
+                            {% elif result.status == 'conflicts' %}
+                                <a href="{{ result.url }}" target="_blank" class="status-conflicts-url">{{ result.url }}</a>
+                            {% else %}
+                                {{ result.url }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% endif %}
 
     <div class="action-buttons">
