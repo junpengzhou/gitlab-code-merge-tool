@@ -124,7 +124,7 @@ class GitlabManager:
                     # 存在冲突
                     if has_conflicts:
                         merge_results[project_name] = self._result_build(
-                            status='conflicts', status_name='创建成功,存在冲突,请本地解决!', url=mr.web_url
+                            status='conflicts', status_name='有冲突,请本地解决!', url=mr.web_url
                         )
                     else:
                         merge_results[project_name] = self._result_build(
