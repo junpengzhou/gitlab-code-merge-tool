@@ -29,6 +29,7 @@ class GitlabManager:
         """获取项目列表"""
         projects = self.gl.projects.list(
             membership=True,
+            archived=False, # 过滤归档项目 feat: add by Frank at 20250302
             all=True,
             iterator=True
         )
@@ -195,6 +196,7 @@ class GitlabManager:
         projects = self.gl.projects.list(
             membership=True,
             all=True,
+            archived=False, # 过滤归档项目 feat: add by Frank at 20250302
             iterator=True
         )
 
