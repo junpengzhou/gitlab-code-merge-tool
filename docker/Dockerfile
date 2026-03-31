@@ -49,6 +49,7 @@ cd /app
 exec gunicorn -c gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
 EOF
 RUN chmod +x /app/bin/launch.sh
+
 ENV PATH="/app/bin:${PATH}"
 
 # Healthcheck
@@ -58,4 +59,4 @@ HEALTHCHECK --interval=60s --timeout=5s --start-period=10s \
 EXPOSE 5000
 
 # Run gunicorn
-CMD ["launch.sh"]
+ENTRYPOINT ["/app/bin/launch.sh"]
