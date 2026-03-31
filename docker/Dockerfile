@@ -41,14 +41,13 @@ COPY .. /app/src
 
 # Set environment variables
 ENV PATH="/app/bin:${PATH}"
-ENV PYTHONPATH="/app/src:${PYTHONPATH}"
+ENV PYTHONPATH="/app/src:/app"
 
 # Create launch script
 RUN cat > /app/bin/launch.sh <<'EOF'
 #!/bin/sh
 # copyright (c) 2026, Frankzhou <frankzhou007@163.com>
 echo "Starting application with gunicorn..."
-cd /app
 exec gunicorn -c /app/src/gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
 EOF
 RUN chmod +x /app/bin/launch.sh
