@@ -209,9 +209,4 @@ def handle_generic_error(error):
 
 
 if __name__ == '__main__':
-    from gevent import monkey
-
-    # 协程, 打上 monkey 补丁
-    monkey.patch_all()
-
     app.run(debug=True, host='0.0.0.0', port=5000)
