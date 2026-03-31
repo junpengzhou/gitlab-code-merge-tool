@@ -1,17 +1,35 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
-# Install necessary packages
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-    gcc python3-dev curl vim \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add --no-cache \
+    gcc \
+    musl-dev \
+    python3-dev \
+    curl \
+    vim \
+    && rm -rf /var/cache/apk/*
+
+# Configure aliases
+RUN cat > /etc/profile.d/aliases.sh <<'EOF'
+alias ll='ls -lh --color=auto'
+alias la='ls -lAh --color=auto'
+alias l='ls -CF --color=auto'
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias df='df -h'
+alias du='du -h'
+alias free='free -h'
+alias cls='clear'
+EOF
 
 # Set working directory
 WORKDIR /app
 
 # Install dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt \
+    -i https://mirrors.aliyun.com/pypi/simple/ \
+    --trusted-host mirrors.aliyun.com
 
 # Copy source code
 COPY .. .
@@ -23,12 +41,14 @@ RUN mkdir -p /app/logs
 RUN mkdir -p /app/bin
 
 # Create launch script
-RUN cat > "/app/bin/launch.sh" <<'EOF'
-#!/bin/bash
+RUN cat > /app/bin/launch.sh <<'EOF'
+#!/bin/sh
 # copyright (c) 2026, Frankzhou <frankzhou007@163.com>
-exec guicorn -c gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
+echo "Starting application with gunicorn..."
+cd /app
+exec gunicorn -c gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
 EOF
-RUN chmod +x "/app/bin/*.sh"
+RUN chmod +x /app/bin/launch.sh
 ENV PATH="/app/bin:${PATH}"
 
 # Healthcheck
