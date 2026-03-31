@@ -31,14 +31,17 @@ RUN pip3 install --no-cache-dir -r requirements.txt \
     -i https://mirrors.aliyun.com/pypi/simple/ \
     --trusted-host mirrors.aliyun.com
 
-# Copy source code
-COPY .. .
-
-USER root
-
-# Create log directory
+# Create log, binary, source directory
 RUN mkdir -p /app/logs
 RUN mkdir -p /app/bin
+
+# Copy source code
+RUN mkdir -p /app/src
+COPY .. /app/src
+
+# Set environment variables
+ENV PATH="/app/bin:${PATH}"
+ENV PYTHONPATH="/app/src:${PYTHONPATH}"
 
 # Create launch script
 RUN cat > /app/bin/launch.sh <<'EOF'
@@ -46,17 +49,17 @@ RUN cat > /app/bin/launch.sh <<'EOF'
 # copyright (c) 2026, Frankzhou <frankzhou007@163.com>
 echo "Starting application with gunicorn..."
 cd /app
-exec gunicorn -c gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
+exec gunicorn -c /app/src/gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
 EOF
 RUN chmod +x /app/bin/launch.sh
-
-ENV PATH="/app/bin:${PATH}"
 
 # Healthcheck
 HEALTHCHECK --interval=60s --timeout=5s --start-period=10s \
   CMD curl -fs http://localhost:5000/health || exit 1
 
+USER root
+
 EXPOSE 5000
 
 # Run gunicorn
-ENTRYPOINT ["/app/bin/launch.sh"]
+CMD ["launch.sh"]
