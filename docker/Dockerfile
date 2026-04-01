@@ -2,6 +2,7 @@ FROM python:3.12-alpine
 
 RUN apk update && \
     apk add --no-cache \
+    bash \
     gcc \
     musl-dev \
     python3-dev \
@@ -10,17 +11,9 @@ RUN apk update && \
     && rm -rf /var/cache/apk/*
 
 # Configure aliases
-RUN cat > /etc/profile.d/aliases.sh <<'EOF'
-alias ll='ls -lh --color=auto'
-alias la='ls -lAh --color=auto'
-alias l='ls -CF --color=auto'
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
-alias df='df -h'
-alias du='du -h'
-alias free='free -h'
-alias cls='clear'
-EOF
+RUN echo "alias ll='ls -lah'" >> /root/.bashrc && \
+    echo "alias la='ls -A'" >> /root/.bashrc && \
+    echo "alias l='ls -CF'" >> /root/.bashrc
 
 # Set working directory
 WORKDIR /app
@@ -45,10 +38,10 @@ ENV PYTHONPATH="/app/src:/app"
 
 # Create launch script
 RUN cat > /app/bin/launch.sh <<'EOF'
-#!/bin/sh
+#!/bin/bash
 # copyright (c) 2026, Frankzhou <frankzhou007@163.com>
 echo "Starting application with gunicorn..."
-exec gunicorn -c /app/src/gunicorn.conf.py app:app >> /app/logs/guicorn.out 2>&1
+exec gunicorn -c /app/src/gunicorn.conf.py app:app >> /app/logs/gunicorn.out 2>&1
 EOF
 RUN chmod +x /app/bin/launch.sh
 
